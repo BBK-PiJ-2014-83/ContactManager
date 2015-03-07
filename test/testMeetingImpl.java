@@ -29,7 +29,7 @@ public class testMeetingImpl {
         invitees.add(john);
         invitees.add(new ContactImpl("David Smith","testing 2", 3));
 
-        testFutureMeeting = new FutureMeetingImpl(3, meetingDate,invitees);
+        testFutureMeeting = new MeetingImpl(3, meetingDate,invitees);
         testPastMeeting = new PastMeetingImpl(3,meetingDate,invitees,"These are the notes from the meeting");
     }
 
@@ -67,14 +67,14 @@ public class testMeetingImpl {
     public void nullValPassedInException() {
         //Shouldn't work because the date is in the past.
         Calendar pastDate = new GregorianCalendar(2001,10, 5);
-        Meeting futureMeet = new FutureMeetingImpl(4,pastDate,invitees);
+        Meeting futureMeet = new MeetingImpl(4,pastDate,invitees);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullConstructor() {
         //The set needs to contain at least one person
         Set<Contact> emptySet = new HashSet<Contact>();
-        Meeting futureMeet = new FutureMeetingImpl(4,meetingDate,emptySet);
+        Meeting futureMeet = new MeetingImpl(4,meetingDate,emptySet);
     }
 
 }
