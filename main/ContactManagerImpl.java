@@ -5,9 +5,12 @@ import java.util.*;
 public class ContactManagerImpl implements ContactManager{
     Set<Contact> contacts;
     List<Meeting> meetings;
+    List<PastMeeting> pastMeetings;
+
     public ContactManagerImpl() {
         contacts = new HashSet<Contact>();
         meetings = new ArrayList<Meeting>();
+        pastMeetings = new ArrayList<PastMeeting>();
     }
 
     /**
@@ -20,8 +23,8 @@ public class ContactManagerImpl implements ContactManager{
      * of if any contact is unknown / non-existent
      */
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-        int id = this.meetings.size();
-        FutureMeeting meet = new FutureMeetingImpl(id ,date,contacts);
+        int id = meetings.size();
+        meetings.add(new FutureMeetingImpl(id ,date,contacts));
         return id;
     };
     /**
@@ -32,7 +35,9 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if there is a meeting with that ID happening in the future
      */
     public PastMeeting getPastMeeting(int id) {
-
+        if(getFutureMeeting(id) != null){
+            throw new IllegalArgumentException("This meeting already exists in the future meetings list.");
+        }
         return new PastMeetingImpl(1,new GregorianCalendar(2000,01,01),contacts,"blah");
     };
     /**
@@ -43,8 +48,11 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if there is a meeting with that ID happening in the past
      */
     public FutureMeeting getFutureMeeting(int id) {
-        return new FutureMeetingImpl(1,new GregorianCalendar(2000,01,01),contacts);
-    };
+        if(getPastMeeting(id) != null){
+            throw new IllegalArgumentException("This meeting already exists in the past meetings list.");
+        }
+        return (FutureMeeting) meetings.get(id);
+    }
     /**
      * Returns the meeting with the requested ID, or null if it there is none.
      *
@@ -66,7 +74,7 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if the contact does not exist
      */
     public List<Meeting> getFutureMeetingList(Contact contact) {
-        return meetings;
+       return meetings;
     };
     /**
      * Returns the list of meetings that are scheduled for, or that took
