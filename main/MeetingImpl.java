@@ -9,10 +9,12 @@ public class MeetingImpl implements Meeting {
     private Calendar Date;
     private Set<Contact> Contacts;
 
-    public MeetingImpl(int id,Calendar date, Set<Contact> contacts){
+    public MeetingImpl(int id,Calendar date, Set<Contact> contacts, boolean future){
         Calendar timeNow = GregorianCalendar.getInstance();
-        if (timeNow.compareTo(date) < 0) {
+        if ((future) && (timeNow.compareTo(date) < 0)) {
             throw new IllegalArgumentException("This meeting is in the past! Create a PastMeeting instead.");
+        } else if ((!future) && ((timeNow.compareTo(date) > 0))) {
+            throw new IllegalArgumentException("This meeting is in the future! Create a FutureMeeting instead.");
         } else if (contacts.size() == 0) {
             throw new IllegalArgumentException("A meeting must have attendees");
         }

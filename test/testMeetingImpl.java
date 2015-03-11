@@ -64,17 +64,24 @@ public class testMeetingImpl {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nullValPassedInException() {
+    public void pastMeetingInFuture() {
         //Shouldn't work because the date is in the past.
         Calendar pastDate = new GregorianCalendar(2001,10, 5);
-        Meeting futureMeet = new MeetingImpl(4,pastDate,invitees);
+        FutureMeetingImpl futureMeet = new FutureMeetingImpl(4,pastDate,invitees);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void futureMeetingInFuture() {
+        //Shouldn't work because the date is in the past.
+        Calendar futureDate = new GregorianCalendar(2021,10, 5);
+        PastMeetingImpl pastMeet = new PastMeetingImpl(4,futureDate,invitees,"new notes for meeting");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullConstructor() {
         //The set needs to contain at least one person
         Set<Contact> emptySet = new HashSet<Contact>();
-        Meeting futureMeet = new MeetingImpl(4,meetingDate,emptySet);
+        FutureMeetingImpl futureMeet = new FutureMeetingImpl(4,meetingDate,emptySet);
     }
 
 }

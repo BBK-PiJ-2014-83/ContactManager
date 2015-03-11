@@ -8,7 +8,7 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting{
     private String Notes;
 
     public PastMeetingImpl(int id,Calendar date, Set<Contact> contacts, String notes) {
-        super(id,date,contacts);
+        super(id,date,contacts,false);
         this.Notes = notes;
     }
     /**
