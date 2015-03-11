@@ -14,8 +14,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class testMeetingImpl {
-    Meeting testFutureMeeting;
-    Meeting testPastMeeting;
+    FutureMeetingImpl testFutureMeeting;
+    PastMeetingImpl testPastMeeting;
     Calendar meetingDate;
     Set<Contact> invitees;
     Contact john;
@@ -29,7 +29,7 @@ public class testMeetingImpl {
         invitees.add(john);
         invitees.add(new ContactImpl("David Smith","testing 2", 3));
 
-        testFutureMeeting = new MeetingImpl(3, meetingDate,invitees);
+        testFutureMeeting = new FutureMeetingImpl(3, meetingDate,invitees);
         testPastMeeting = new PastMeetingImpl(3,meetingDate,invitees,"These are the notes from the meeting");
     }
 

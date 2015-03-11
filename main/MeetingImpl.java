@@ -1,17 +1,21 @@
 package main;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
-/**
- * Created by John on 07/03/2015.
- */
 public class MeetingImpl implements Meeting {
     private int Id;
     private Calendar Date;
     private Set<Contact> Contacts;
 
     public MeetingImpl(int id,Calendar date, Set<Contact> contacts){
+        Calendar timeNow = GregorianCalendar.getInstance();
+        if (timeNow.compareTo(date) < 0) {
+            throw new IllegalArgumentException("This meeting is in the past! Create a PastMeeting instead.");
+        } else if (contacts.size() == 0) {
+            throw new IllegalArgumentException("A meeting must have attendees");
+        }
         this.Id = id;
         this.Date = date;
         this.Contacts = contacts;
