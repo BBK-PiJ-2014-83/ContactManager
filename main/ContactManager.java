@@ -18,7 +18,6 @@ public interface ContactManager {
      */
     int addFutureMeeting(Set<Contact> contacts, Calendar date);
     /**
-     1
      * Returns the PAST meeting with the requested ID, or null if it there is none.
      *
      * @param id the ID for the meeting
