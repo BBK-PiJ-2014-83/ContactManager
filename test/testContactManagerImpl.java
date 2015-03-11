@@ -27,12 +27,7 @@ public class testContactManagerImpl {
         meetingDate = new GregorianCalendar(2012, 06, 10);
         int id = testContactManager.addFutureMeeting(contacts, meetingDate);
     }
-    @Test
-    public void addFutureMeetingWorks() {
-        meetingDate = new GregorianCalendar(2015, 06, 10);
-        int id =  testContactManager.addFutureMeeting(contacts, meetingDate);
 
-    }
 
 
 }

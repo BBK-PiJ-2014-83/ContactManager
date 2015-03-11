@@ -23,6 +23,7 @@ public class testMeetingImpl {
     @Before
     public void before() {
         meetingDate = new GregorianCalendar(2015, 04, 02);
+        Calendar pastDate = new GregorianCalendar(2010, 04, 02);
         invitees = new HashSet<Contact>();
         john = new ContactImpl("John Spear","testing 1", 2);
         uninvited = new ContactImpl("Persona NonGrata","We don't like him, he's not invited",1);
@@ -30,7 +31,7 @@ public class testMeetingImpl {
         invitees.add(new ContactImpl("David Smith","testing 2", 3));
 
         testFutureMeeting = new FutureMeetingImpl(3, meetingDate,invitees);
-        testPastMeeting = new PastMeetingImpl(3,meetingDate,invitees,"These are the notes from the meeting");
+        testPastMeeting = new PastMeetingImpl(3,pastDate,invitees,"These are the notes from the meeting");
     }
 
     @Test
@@ -64,14 +65,14 @@ public class testMeetingImpl {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void pastMeetingInFuture() {
+    public void futureMeetingInPast() {
         //Shouldn't work because the date is in the past.
         Calendar pastDate = new GregorianCalendar(2001,10, 5);
         FutureMeetingImpl futureMeet = new FutureMeetingImpl(4,pastDate,invitees);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void futureMeetingInFuture() {
+    public void pastMeetingInFuture() {
         //Shouldn't work because the date is in the past.
         Calendar futureDate = new GregorianCalendar(2021,10, 5);
         PastMeetingImpl pastMeet = new PastMeetingImpl(4,futureDate,invitees,"new notes for meeting");

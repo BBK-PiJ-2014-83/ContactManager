@@ -11,9 +11,9 @@ public class MeetingImpl implements Meeting {
 
     public MeetingImpl(int id,Calendar date, Set<Contact> contacts, boolean future){
         Calendar timeNow = GregorianCalendar.getInstance();
-        if ((future) && (timeNow.compareTo(date) < 0)) {
+        if ((future) && (date.compareTo(timeNow) < 0)) {
             throw new IllegalArgumentException("This meeting is in the past! Create a PastMeeting instead.");
-        } else if ((!future) && ((timeNow.compareTo(date) > 0))) {
+        } else if ((!future) && ((date.compareTo(timeNow) > 0))) {
             throw new IllegalArgumentException("This meeting is in the future! Create a FutureMeeting instead.");
         } else if (contacts.size() == 0) {
             throw new IllegalArgumentException("A meeting must have attendees");

@@ -20,7 +20,9 @@ public class ContactManagerImpl implements ContactManager{
      * of if any contact is unknown / non-existent
      */
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-        return 1;
+        int id = this.meetings.size();
+        FutureMeeting meet = new FutureMeetingImpl(id ,date,contacts);
+        return id;
     };
     /**
      * Returns the PAST meeting with the requested ID, or null if it there is none.
@@ -92,7 +94,7 @@ public class ContactManagerImpl implements ContactManager{
      * @return the list of future meeting(s) scheduled with this contact (maybe empty).
      * @throws IllegalArgumentException if the contact does not exist
      */
-    List<PastMeeting> getPastMeetingList(Contact contact) {
+    public List<PastMeeting> getPastMeetingList(Contact contact) {
         List<PastMeeting> test = new ArrayList<PastMeeting>();
         return test;
     };
