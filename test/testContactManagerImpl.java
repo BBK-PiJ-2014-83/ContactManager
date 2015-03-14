@@ -45,14 +45,19 @@ public class testContactManagerImpl {
         assertEquals(dummyMeeting.getId(),testContactManager.getFutureMeeting(1).getId());
     }
 
-    //Add a future meeting with a contact who isn't in the contact list.
-    @Test(expected = IllegalArgumentException.class)
-    public void getFutureMeetingBadContact(){
-        meetingDate = new GregorianCalendar(2018, 06, 10);
-        FutureMeetingImpl dummyMeeting = new FutureMeetingImpl(1,meetingDate,contacts);
-        testContactManager.addFutureMeeting(contacts,meetingDate);
+    @Test
+    public void getPastMeetingExists(){
+        meetingDate = new GregorianCalendar(2003, 06, 10);
+        PastMeetingImpl dummyMeeting = new PastMeetingImpl(1,meetingDate,contacts,"this was a dull dull meeting");
+        testContactManager.addPastMeeting(contacts, meetingDate);
         assertEquals(dummyMeeting.getId(),testContactManager.getFutureMeeting(1).getId());
     }
+    @Test(expected = NullPointerException.class)
+    public void addPastMeetingNullArgument() {
+        meetingDate = new GregorianCalendar(2012, 06, 10);
+        int id = testContactManager.addFutureMeeting(contacts, meetingDate);
+    }
+
 
 
 }
