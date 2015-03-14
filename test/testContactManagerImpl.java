@@ -36,12 +36,22 @@ public class testContactManagerImpl {
        // int id = testContactManager.addFutureMeeting(contacts, meetingDate);
     //}
 
+    //Add a future meeting and then get it from the list. Should work.
     @Test
     public void getFutureMeetingExists(){
         meetingDate = new GregorianCalendar(2018, 06, 10);
         FutureMeetingImpl dummyMeeting = new FutureMeetingImpl(1,meetingDate,contacts);
         testContactManager.addFutureMeeting(contacts,meetingDate);
-        assertEquals(dummyMeeting,testContactManager.getFutureMeeting(0));
+        assertEquals(dummyMeeting.getId(),testContactManager.getFutureMeeting(1).getId());
+    }
+
+    //Add a future meeting with a contact who isn't in the contact list.
+    @Test(expected = IllegalArgumentException.class)
+    public void getFutureMeetingBadContact(){
+        meetingDate = new GregorianCalendar(2018, 06, 10);
+        FutureMeetingImpl dummyMeeting = new FutureMeetingImpl(1,meetingDate,contacts);
+        testContactManager.addFutureMeeting(contacts,meetingDate);
+        assertEquals(dummyMeeting.getId(),testContactManager.getFutureMeeting(1).getId());
     }
 
 

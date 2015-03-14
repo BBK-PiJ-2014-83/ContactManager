@@ -22,8 +22,8 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if the meeting is set for a time in the past,
      * of if any contact is unknown / non-existent
      */
-    public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-        int id = meetings.size();
+    public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
+        int id = getLargestId(meetings);
         meetings.add(new FutureMeetingImpl(id ,date,contacts));
         return id;
     };
@@ -35,10 +35,10 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if there is a meeting with that ID happening in the future
      */
     public PastMeeting getPastMeeting(int id) {
-        if(getFutureMeeting(id) != null){
+        if(getMeetingById(id) != null){
             throw new IllegalArgumentException("This meeting already exists in the future meetings list.");
         }
-        return new PastMeetingImpl(1,new GregorianCalendar(2000,01,01),contacts,"blah");
+        return getPastMeetingById(id);
     };
     /**
      * Returns the FUTURE meeting with the requested ID, or null if there is none.
@@ -48,10 +48,10 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if there is a meeting with that ID happening in the past
      */
     public FutureMeeting getFutureMeeting(int id) {
-        if(getPastMeeting(id) != null){
+        if(getPastMeetingById(id) != null){
             throw new IllegalArgumentException("This meeting already exists in the past meetings list.");
         }
-        return (FutureMeeting) meetings.get(id);
+        return getMeetingById(id);
     }
     /**
      * Returns the meeting with the requested ID, or null if it there is none.
@@ -95,7 +95,6 @@ public class ContactManagerImpl implements ContactManager{
      *
      * If there are none, the returned list will be empty. Otherwise,
      * the list will be chronologically sorted and will not contain any
-     2
      * duplicates.
      *
      * @param contact one of the user’s contacts
@@ -175,4 +174,30 @@ public class ContactManagerImpl implements ContactManager{
     public void flush(){
 
     };
+
+    public int getLargestId(List<Meeting> Meetings) {
+        int largestId = 0;
+        for (Meeting Meeting : Meetings)
+            largestId = (Meeting.getId() > largestId) ? Meeting.getId() : largestId;
+        return largestId + 1;
+    }
+
+    public FutureMeeting getMeetingById(int id) {
+        for (Meeting meeting : meetings)
+            if (meeting.getId() == id )
+                return (FutureMeeting) meeting;
+        return null;
+    }
+
+    public PastMeeting getPastMeetingById(int id) {
+        for (PastMeeting meeting : pastMeetings)
+            if (meeting.getId() == id )
+                return meeting;
+
+        return null;
+    }
+
+    public void getContacts() {
+
+    }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contactManager>
+    <contacts>
+        <contact>
+            <id>1</id>
+            <name>John Spear</name>
+            <notes>Busy busy busy.</notes>
+        </contact>
+        <contact>
+            <id>2</id>
+            <name>David Smith</name>
+            <notes>David likes chess.</notes>
+        </contact>
+    </contacts>
+    <pastMeetings></pastMeetings>
+    <futureMeetings>
+        <meeting>
+            <id>1</id>
+            <date></date>
+        </meeting>
+    </futureMeetings>
+</contactManager>
+
