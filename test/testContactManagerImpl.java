@@ -48,14 +48,14 @@ public class testContactManagerImpl {
     @Test
     public void getPastMeetingExists(){
         meetingDate = new GregorianCalendar(2003, 06, 10);
-        PastMeetingImpl dummyMeeting = new PastMeetingImpl(1,meetingDate,contacts,"this was a dull dull meeting");
-        testContactManager.addPastMeeting(contacts, meetingDate);
-        assertEquals(dummyMeeting.getId(),testContactManager.getFutureMeeting(1).getId());
+        testContactManager.addNewPastMeeting(contacts, meetingDate, "This was a dull dull meeting");
+        assertEquals(1,testContactManager.getPastMeeting(1).getId());
     }
+
     @Test(expected = NullPointerException.class)
     public void addPastMeetingNullArgument() {
         meetingDate = new GregorianCalendar(2012, 06, 10);
-        int id = testContactManager.addFutureMeeting(contacts, meetingDate);
+        testContactManager.addNewPastMeeting(null, meetingDate,"This was a dull dull meeting");
     }
 
 

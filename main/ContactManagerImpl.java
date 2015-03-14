@@ -23,7 +23,7 @@ public class ContactManagerImpl implements ContactManager{
      * of if any contact is unknown / non-existent
      */
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
-        int id = getLargestId(meetings);
+        int id = getLargestId();
         meetings.add(new FutureMeetingImpl(id ,date,contacts));
         return id;
     };
@@ -116,9 +116,12 @@ public class ContactManagerImpl implements ContactManager{
      * @throws NullPointerException if any of the arguments is null
      */
     public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
+        if ((contacts == null) || (date == null) ||  (text == null)) {
+            throw new NullPointerException("You can't pass a null value into the constructor for a contact.");
+        }
 
-
-    };
+        pastMeetings.add(new PastMeetingImpl(getLargestId(),date,contacts,text));
+    }
     /**
      * Add notes to a meeting.
      *
@@ -135,7 +138,7 @@ public class ContactManagerImpl implements ContactManager{
      */
     public void addMeetingNotes(int id, String text) {
 
-    };
+    }
     /**
      * Create a new contact with the specified name and notes.
      *
@@ -176,10 +179,16 @@ public class ContactManagerImpl implements ContactManager{
 
     };
 
-    public int getLargestId(List<Meeting> Meetings) {
+    /**
+     * Loop through both sets of meetings to find a safe id to use.
+     * @return
+     */
+    public int getLargestId() {
         int largestId = 0;
-        for (Meeting Meeting : Meetings)
-            largestId = (Meeting.getId() > largestId) ? Meeting.getId() : largestId;
+        for (Meeting meeting : meetings)
+            largestId = (meeting.getId() > largestId) ? meeting.getId() : largestId;
+        for (PastMeeting pastMeeting : pastMeetings)
+            largestId = (pastMeeting.getId() > largestId) ? pastMeeting.getId() : largestId;
         return largestId + 1;
     }
 
