@@ -19,15 +19,24 @@ public class testContactManagerImpl {
         testContactManager = new ContactManagerImpl();
         contacts = new HashSet<Contact>();
         contacts.add(new ContactImpl("John Spear", "He's pretty busy at the moment.",3));
-        contacts.add(new ContactImpl("james Buchanon", "No data about him",3));
+        contacts.add(new ContactImpl("james Buchanon", "No data about him",4));
 
     }
-    //This is going to try to add a future meeting that is set in the past
+
+    //Get a contact who exists
+    @Test
+    public void getContactExists() {
+        Set<Contact> testContacts =  testContactManager.getContacts(3);
+        assertEquals(testContacts.size(),1);
+    }
+
+    //This is going to try to add a future meeting that is set in the past Should fail.
     @Test(expected = IllegalArgumentException.class)
     public void addFutureMeetingPast() {
         meetingDate = new GregorianCalendar(2012, 06, 10);
         int id = testContactManager.addFutureMeeting(contacts, meetingDate);
     }
+
     //This is going to try to add a future meeting where the contact isn't in the list
    // @Test(expected = IllegalArgumentException.class)
    // public void addFutureMeetingNonContact() {
@@ -44,19 +53,20 @@ public class testContactManagerImpl {
         testContactManager.addFutureMeeting(contacts,meetingDate);
         assertEquals(dummyMeeting.getId(),testContactManager.getFutureMeeting(1).getId());
     }
-
+    //Add a past meeting and then get it from the list should work
     @Test
     public void getPastMeetingExists(){
         meetingDate = new GregorianCalendar(2003, 06, 10);
         testContactManager.addNewPastMeeting(contacts, meetingDate, "This was a dull dull meeting");
         assertEquals(1,testContactManager.getPastMeeting(1).getId());
     }
-
+    //Add a past meeting with a null argument. Should fail.
     @Test(expected = NullPointerException.class)
     public void addPastMeetingNullArgument() {
         meetingDate = new GregorianCalendar(2012, 06, 10);
         testContactManager.addNewPastMeeting(null, meetingDate,"This was a dull dull meeting");
     }
+
 
 
 
