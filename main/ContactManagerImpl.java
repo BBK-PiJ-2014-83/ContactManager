@@ -175,7 +175,14 @@ public class ContactManagerImpl implements ContactManager{
      * @throws NullPointerException if the parameter is null
      */
     public Set<Contact> getContacts(String name) {
-        return contacts;
+        if ((name == null) || (name == ""))
+            throw new NullPointerException("You cannot search for a contact with an empty string!");
+        final Set<Contact> contactSet = new HashSet<Contact>();
+        //Uses Lamda expressions to see if any names contain the string entered
+        contacts.stream().filter(x -> (x.getName().toLowerCase().contains(name.toLowerCase())))
+            .forEach(contact -> contactSet.add(contact));
+
+        return contactSet;
     };
     /**
      * Save all data to disk.

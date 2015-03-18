@@ -49,9 +49,13 @@ public class testContactManagerImpl {
     @Test
     public void getContactByStringExists() {
         testContactManager.addNewContact("Jim Smith", "The bald eagle");
-        Set<Contact> testContacts =  testContactManager.getContacts(4);
+        Set<Contact> testContacts =  testContactManager.getContacts("Jim");
     }
-
+    //Try to get a contact with a null string
+    @Test(expected = NullPointerException.class)
+    public void GetContactByStringNullArgument() {
+        testContactManager.getContacts("");
+    }
 
     //Try to add a contact with a null argument
     @Test(expected = NullPointerException.class)
