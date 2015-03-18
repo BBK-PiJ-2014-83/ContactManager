@@ -23,20 +23,28 @@ public class testContactManagerImpl {
 
     }
 
-    //Get a contact who exists
-    @Test
-    public void getContactExists() {
-        Set<Contact> testContacts =  testContactManager.getContacts(3);
-        assertEquals(testContacts.size(),1);
-    }
-
     //Add a new contact then check they are in there
     @Test
     public void addContactWorks() {
         testContactManager.addNewContact("Jim Smith", "The bald eagle");
-        Set<Contact> testContacts =  testContactManager.getContacts(4);
-        assertEquals(testContacts,1);
+        Set<Contact> testContacts =  testContactManager.getContacts(1);
+        assertEquals(testContacts.size(),1);
     }
+    //Add multiple contacts then checkthey are in there
+    @Test
+    public void addMultipleContacts() {
+        testContactManager.addNewContact("Jim Smith", "The bald eagle");
+        testContactManager.addNewContact("John Smith", "yes");
+        Set<Contact> testContacts =  testContactManager.getContacts(1,2);
+        assertEquals(testContacts.size(),2);
+    }
+
+    //Trey to get a contact that doesn't exist
+    @Test(expected = IllegalArgumentException.class)
+    public void getContactNotExist() {
+        Set<Contact> testContacts =  testContactManager.getContacts(4);
+    }
+
     //Try to add a contact with a null argument
     @Test(expected = NullPointerException.class)
     public void addContactNullArgument() {

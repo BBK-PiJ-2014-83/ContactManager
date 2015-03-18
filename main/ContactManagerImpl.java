@@ -146,7 +146,7 @@ public class ContactManagerImpl implements ContactManager{
      * @throws NullPointerException if the name or the notes are null
      */
     public void addNewContact(String name, String notes){
-
+        contacts.add(new ContactImpl(name,notes,getLargestId(false)));
     };
     /**
      * Returns a list containing the contacts that correspond to the IDs.
@@ -199,13 +199,12 @@ public class ContactManagerImpl implements ContactManager{
                 largestId = (meeting.getId() > largestId) ? meeting.getId() : largestId;
             for (PastMeeting pastMeeting : pastMeetings)
                 largestId = (pastMeeting.getId() > largestId) ? pastMeeting.getId() : largestId;
-            return largestId + 1;
         } else {
             for (Contact contact : contacts)
                 largestId = (contact.getId() > largestId) ? contact.getId() : largestId;
         }
 
-
+        return largestId + 1;
     }
 
     public FutureMeeting getMeetingById(int id) {
