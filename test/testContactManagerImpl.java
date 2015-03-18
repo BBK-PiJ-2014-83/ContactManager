@@ -30,6 +30,19 @@ public class testContactManagerImpl {
         assertEquals(testContacts.size(),1);
     }
 
+    //Add a new contact then check they are in there
+    @Test
+    public void addContactWorks() {
+        testContactManager.addNewContact("Jim Smith", "The bald eagle");
+        Set<Contact> testContacts =  testContactManager.getContacts(4);
+        assertEquals(testContacts,1);
+    }
+    //Try to add a contact with a null argument
+    @Test(expected = NullPointerException.class)
+    public void addContactNullArgument() {
+        testContactManager.addNewContact(null, "The bald eagle");
+    }
+
     //This is going to try to add a future meeting that is set in the past Should fail.
     @Test(expected = IllegalArgumentException.class)
     public void addFutureMeetingPast() {
