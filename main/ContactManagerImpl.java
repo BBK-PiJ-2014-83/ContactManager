@@ -117,7 +117,7 @@ public class ContactManagerImpl implements ContactManager{
      */
     public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
         if ((contacts == null) || (date == null) ||  (text == null)) {
-            throw new NullPointerException("You can't pass a null value into the constructor for a contact.");
+            throw new NullPointerException("You can't pass a null value into the constructor for a past meeting.");
         }
 
         pastMeetings.add(new PastMeetingImpl(getLargestId(),date,contacts,text));

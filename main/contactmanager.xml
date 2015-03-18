@@ -12,11 +12,18 @@
             <notes>David likes chess.</notes>
         </contact>
     </contacts>
-    <pastMeetings></pastMeetings>
-    <futureMeetings>
+    <pastMeetings>
         <meeting>
             <id>1</id>
-            <date></date>
+            <date>2014/04/02 10:00:00</date>
+            <contacts>1,2</contacts>
+        </meeting>
+    </pastMeetings>
+    <futureMeetings>
+        <meeting>
+            <id>2</id>
+            <date>2016/04/02 10:00:00</date>
+            <contacts>1,2</contacts>
         </meeting>
     </futureMeetings>
 </contactManager>
