@@ -23,7 +23,7 @@ public class ContactManagerImpl implements ContactManager{
      * of if any contact is unknown / non-existent
      */
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
-        int id = getLargestId();
+        int id = getLargestId(true);
         meetings.add(new FutureMeetingImpl(id ,date,contacts));
         return id;
     };
@@ -119,8 +119,7 @@ public class ContactManagerImpl implements ContactManager{
         if ((contacts == null) || (date == null) ||  (text == null)) {
             throw new NullPointerException("You can't pass a null value into the constructor for a past meeting.");
         }
-
-        pastMeetings.add(new PastMeetingImpl(getLargestId(),date,contacts,text));
+        pastMeetings.add(new PastMeetingImpl(getLargestId(true),date,contacts,text));
     }
     /**
      * Add notes to a meeting.
@@ -157,7 +156,16 @@ public class ContactManagerImpl implements ContactManager{
      * @throws IllegalArgumentException if any of the IDs does not correspond to a real contact
      */
     public Set<Contact> getContacts(int... ids){
-        return contacts;
+       Set<Contact> contactSet = new HashSet<Contact>();
+        for(int i: ids) {
+            Optional<Contact> person =  contacts.stream().filter(x -> (x.getId() == i)).findFirst();
+            if (person.isPresent()) {
+                contactSet.add(person.get());
+            } else {
+                throw new IllegalArgumentException("The user with id :" + i + " does not exist");
+            }
+       }
+        return contactSet;
     };
     /**
      * Returns a list with the contacts whose name contains that string.
@@ -180,16 +188,24 @@ public class ContactManagerImpl implements ContactManager{
     };
 
     /**
-     * Loop through both sets of meetings to find a safe id to use.
+     * Loop through list and bring back the largest id
+     * @param meetingList true if this is to get largest meeting id. False if to get largest contact id.
      * @return
      */
-    public int getLargestId() {
+    private int getLargestId(boolean meetingList) {
         int largestId = 0;
-        for (Meeting meeting : meetings)
-            largestId = (meeting.getId() > largestId) ? meeting.getId() : largestId;
-        for (PastMeeting pastMeeting : pastMeetings)
-            largestId = (pastMeeting.getId() > largestId) ? pastMeeting.getId() : largestId;
-        return largestId + 1;
+        if (meetingList) {
+            for (Meeting meeting : meetings)
+                largestId = (meeting.getId() > largestId) ? meeting.getId() : largestId;
+            for (PastMeeting pastMeeting : pastMeetings)
+                largestId = (pastMeeting.getId() > largestId) ? pastMeeting.getId() : largestId;
+            return largestId + 1;
+        } else {
+            for (Contact contact : contacts)
+                largestId = (contact.getId() > largestId) ? contact.getId() : largestId;
+        }
+
+
     }
 
     public FutureMeeting getMeetingById(int id) {
