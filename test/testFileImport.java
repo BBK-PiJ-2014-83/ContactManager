@@ -25,6 +25,11 @@ public class testFileImport {
         assertEquals(2,contacts.getLength());
     }
 
+    @Test
+    public void getPastMeeting() {
+        NodeList contacts = test.getItems("contact",testDoc);
+        assertEquals(2,contacts.getLength());
+    }
 
 
 
