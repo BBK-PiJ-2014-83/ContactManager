@@ -26,7 +26,7 @@ public class ContactManagerImpl implements ContactManager{
         int id = getLargestId(true);
         meetings.add(new FutureMeetingImpl(id ,date,contacts));
         return id;
-    };
+    }
     /**
      * Returns the PAST meeting with the requested ID, or null if it there is none.
      *
@@ -39,7 +39,7 @@ public class ContactManagerImpl implements ContactManager{
             throw new IllegalArgumentException("This meeting already exists in the future meetings list.");
         }
         return getPastMeetingById(id);
-    };
+    }
     /**
      * Returns the FUTURE meeting with the requested ID, or null if there is none.
      *
@@ -104,7 +104,7 @@ public class ContactManagerImpl implements ContactManager{
     public List<PastMeeting> getPastMeetingList(Contact contact) {
         List<PastMeeting> test = new ArrayList<PastMeeting>();
         return test;
-    };
+    }
     /**
      * Create a new record for a meeting that took place in the past.
      *
@@ -147,7 +147,7 @@ public class ContactManagerImpl implements ContactManager{
      */
     public void addNewContact(String name, String notes){
         contacts.add(new ContactImpl(name,notes,getLargestId(false)));
-    };
+    }
     /**
      * Returns a list containing the contacts that correspond to the IDs.
      *
@@ -166,7 +166,7 @@ public class ContactManagerImpl implements ContactManager{
             }
        }
         return contactSet;
-    };
+    }
     /**
      * Returns a list with the contacts whose name contains that string.
      *
@@ -183,7 +183,7 @@ public class ContactManagerImpl implements ContactManager{
             .forEach(contact -> contactSet.add(contact));
 
         return contactSet;
-    };
+    }
     /**
      * Save all data to disk.
      *
@@ -230,6 +230,18 @@ public class ContactManagerImpl implements ContactManager{
     }
 
     public void getContacts() {
+
+    }
+
+    public static int[] stringToInt(String[] input) {
+        int[] numbers = new int[input.length];
+        for (int i = 0; i < input.length; i++) {
+            numbers[i] = Integer.parseInt(input[i]);
+        }
+        return numbers;
+    }
+
+    public void loadFile() {
 
     }
 }

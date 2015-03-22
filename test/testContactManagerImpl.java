@@ -39,7 +39,16 @@ public class testContactManagerImpl {
         assertEquals(testContacts.size(),2);
     }
 
-    //Trey to get a contact that doesn't exist
+    //Try to get a list of contacts from string split to array (which is what will happen when coming from a file)
+    @Test
+    public void getContactsSplit() {
+        testContactManager.addNewContact("Jim Smith", "The bald eagle");
+        testContactManager.addNewContact("John Smith", "yes");
+        String[] test= "1,2".split(",");
+        Set<Contact> testContacts =  testContactManager.getContacts(ContactManagerImpl.stringToInt(test));
+        assertEquals(testContacts.size(),2);
+    }
+    //Try to get a contact that doesn't exist
     @Test(expected = IllegalArgumentException.class)
     public void getContactNotExist() {
         Set<Contact> testContacts =  testContactManager.getContacts(4);
