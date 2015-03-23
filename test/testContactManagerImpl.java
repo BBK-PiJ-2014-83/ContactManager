@@ -109,13 +109,7 @@ public class testContactManagerImpl {
         testContactManager.addNewPastMeeting(null, meetingDate,"This was a dull dull meeting");
     }
 
-    //load the contacts from the testfile then test to see if it exists by calling it back
-    @Test
-    public void addContactsFromFile() {
-        testContactManager.loadFile("testFile");
-        Set<Contact> testContacts =  testContactManager.getContacts("John");
-        assertEquals(testContacts.size(),1);
-    }
+
 
 
 }

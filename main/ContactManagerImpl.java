@@ -220,14 +220,14 @@ public class ContactManagerImpl implements ContactManager{
         return largestId + 1;
     }
 
-    public FutureMeeting getMeetingById(int id) {
+    private FutureMeeting getMeetingById(int id) {
         for (Meeting meeting : meetings)
             if (meeting.getId() == id )
                 return (FutureMeeting) meeting;
         return null;
     }
 
-    public PastMeeting getPastMeetingById(int id) {
+    private PastMeeting getPastMeetingById(int id) {
         for (PastMeeting meeting : pastMeetings)
             if (meeting.getId() == id )
                 return meeting;
