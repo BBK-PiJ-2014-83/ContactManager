@@ -1,16 +1,22 @@
 package main;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.util.*;
 
 public class ContactManagerImpl implements ContactManager{
     Set<Contact> contacts;
     List<Meeting> meetings;
     List<PastMeeting> pastMeetings;
-
+    XmlFile file;
+    Document meetingData;
     public ContactManagerImpl() {
         contacts = new HashSet<Contact>();
         meetings = new ArrayList<Meeting>();
         pastMeetings = new ArrayList<PastMeeting>();
+        file = new XmlFile();
     }
 
     /**
@@ -240,8 +246,45 @@ public class ContactManagerImpl implements ContactManager{
         }
         return numbers;
     }
+    //Load the file and populate the contacts / future meetings / past meetings
+    public void loadFile(String fileName) {
+        meetingData = file.readFile(fileName);
+        loadContacts();
+        loadMeetings(true);
+        loadMeetings(false);
+    }
 
-    public void loadFile() {
+    //Populate the contacts from the xml
+    public void loadContacts() {
+        NodeList contactList = file.getItems("contact", meetingData);
+        int id = 0;
+        String notes = "";
+        String name = "";
+        for (int i = 0; i < contactList.getLength(); i++) {
+            NodeList contact = contactList.item(i).getChildNodes();
+            for (int j = 0; j < contact.getLength(); j++) {
+                if (contact.item(j).getNodeType() == Node.ELEMENT_NODE){
+                    switch (contact.item(j).getNodeName()) {
+                        case "name" :
+                            name = contact.item(j).getTextContent();
+                            break;
+                        case "notes" :
+                            notes = contact.item(j).getTextContent();
+                            break;
+                        case "id" :
+                            id = Integer.parseInt(contact.item(j).getTextContent());
+                    }
+
+                }
+            }
+            contacts.add(new ContactImpl(name,notes,id));
+            // System.out.println(contactList.item(i).getChildNodes().getLength());
+
+        }
+
+    }
+
+    public void loadMeetings(boolean pastMeetings) {
 
     }
 }
