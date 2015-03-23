@@ -79,13 +79,6 @@ public class testContactManagerImpl {
         int id = testContactManager.addFutureMeeting(contacts, meetingDate);
     }
 
-    //This is going to try to add a future meeting where the contact isn't in the list
-   // @Test(expected = IllegalArgumentException.class)
-   // public void addFutureMeetingNonContact() {
-        //can't do yet as there are no contacts
-        //meetingDate = new GregorianCalendar(2012, 06, 10);
-       // int id = testContactManager.addFutureMeeting(contacts, meetingDate);
-    //}
 
     //Add a future meeting and then get it from the list. Should work.
     @Test
@@ -108,6 +101,7 @@ public class testContactManagerImpl {
         meetingDate = new GregorianCalendar(2012, 06, 10);
         testContactManager.addNewPastMeeting(null, meetingDate,"This was a dull dull meeting");
     }
+
 
 
 

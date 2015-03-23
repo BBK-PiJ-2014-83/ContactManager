@@ -27,7 +27,7 @@ public class ContactManagerImpl implements ContactManager{
         meetings = new ArrayList<Meeting>();
         pastMeetings = new ArrayList<PastMeeting>();
         file = new XmlFile();
-
+        loadFile("contactmanager");
     }
 
     /**
@@ -41,6 +41,10 @@ public class ContactManagerImpl implements ContactManager{
      */
     public int addFutureMeeting(Set<Contact> contacts, Calendar date) throws IllegalArgumentException {
         int id = getLargestId(true);
+        for(Contact contact : contacts) {
+            //try to get each contact by id - will throw an exception if they don't exist.
+            getContacts(contact.getId());
+        }
         meetings.add(new FutureMeetingImpl(id ,date,contacts));
         return id;
     }
@@ -77,7 +81,13 @@ public class ContactManagerImpl implements ContactManager{
      * @return the meeting with the requested ID, or null if it there is none.
      */
     public Meeting getMeeting(int id) {
-        return new FutureMeetingImpl(1,new GregorianCalendar(2000,01,01),contacts);
+        if (getMeetingById(id) != null) {
+            return getMeetingById(id);
+        } else if (getPastMeetingById(id) != null) {
+            return getPastMeetingById(id);
+        } else {
+            return null;
+        }
     };
     /**
      * Returns the list of future meetings scheduled with this contact.
@@ -90,9 +100,29 @@ public class ContactManagerImpl implements ContactManager{
      * @return the list of future meeting(s) scheduled with this contact (maybe empty).
      * @throws IllegalArgumentException if the contact does not exist
      */
-    public List<Meeting> getFutureMeetingList(Contact contact) {
-       return meetings;
-    };
+    public List<Meeting> getFutureMeetingList(Contact contact) throws IllegalArgumentException {
+        if (getContacts(contact.getId()).size() == 0) {
+            throw new IllegalArgumentException("This contact doesn't exist!");
+        }
+        List<FutureMeetingImpl> tmpMeetings = new ArrayList<FutureMeetingImpl>();
+        for(Meeting meeting : meetings) {
+            Set<Contact> tmpContacts = meeting.getContacts();
+            for(Contact tmpContact : tmpContacts) {
+                if (contact.getId() == tmpContact.getId()) {
+                    tmpMeetings.add((FutureMeetingImpl) meeting);
+                    break;
+                }
+            }
+        }
+        //Now sort the meetings chronologically
+        Collections.sort(tmpMeetings);
+        List<Meeting> rtnList = new ArrayList<Meeting>();
+        for(FutureMeetingImpl tmpMeeting: tmpMeetings) {
+            rtnList.add(tmpMeeting);
+        }
+
+       return rtnList;
+    }
     /**
      * Returns the list of meetings that are scheduled for, or that took
      * place on, the specified date
@@ -105,8 +135,35 @@ public class ContactManagerImpl implements ContactManager{
      * @return the list of meetings
      */
    public List<Meeting> getFutureMeetingList(Calendar date) {
-       return meetings;
-   };
+       List<FutureMeetingImpl> tmpMeetings = new ArrayList<FutureMeetingImpl>();
+
+       for(Meeting meeting : meetings) {
+            if (setStartOfDay(date).equals(setStartOfDay(meeting.getDate()))) {
+                tmpMeetings.add((FutureMeetingImpl) meeting);
+            }
+       }
+
+       //Now sort the meetings chronologically
+       Collections.sort(tmpMeetings);
+       List<Meeting> rtnList = new ArrayList<Meeting>();
+       for(FutureMeetingImpl tmpMeeting: tmpMeetings) {
+           rtnList.add(tmpMeeting);
+       }
+       return rtnList;
+   }
+    /**
+     * A private helper method to help compare dates by setting it to beggining of the day
+     *
+     * @param date Date with time
+     * @return The date with the time set to 0
+     */
+    private Calendar setStartOfDay(Calendar date) {
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date;
+    }
     /**
      * Returns the list of past meetings in which this contact has participated.
      *
@@ -118,9 +175,21 @@ public class ContactManagerImpl implements ContactManager{
      * @return the list of future meeting(s) scheduled with this contact (maybe empty).
      * @throws IllegalArgumentException if the contact does not exist
      */
-    public List<PastMeeting> getPastMeetingList(Contact contact) {
-        List<PastMeeting> test = new ArrayList<PastMeeting>();
-        return test;
+    public List<PastMeeting> getPastMeetingList(Contact contact) throws IllegalArgumentException {
+        if (getContacts(contact.getId()).size() == 0) {
+            throw new IllegalArgumentException("This contact doesn't exist!");
+        }
+        List<PastMeeting> rtnList = new ArrayList<PastMeeting>();
+        for(PastMeeting meeting : pastMeetings) {
+            Set<Contact> tmpContacts = meeting.getContacts();
+            for(Contact tmpContact : tmpContacts) {
+                if (contact.getId() == tmpContact.getId()) {
+                    rtnList.add(meeting);
+                    break;
+                }
+            }
+        }
+        return rtnList;
     }
     /**
      * Create a new record for a meeting that took place in the past.
@@ -153,7 +222,17 @@ public class ContactManagerImpl implements ContactManager{
      * @throws NullPointerException if the notes are null
      */
     public void addMeetingNotes(int id, String text) {
-
+        Calendar timeNow = GregorianCalendar.getInstance();
+        if (getMeeting(id) == null) {
+            throw new IllegalArgumentException("Meeting does not exist");
+        } else if (getMeeting(id).getDate().compareTo(timeNow) > 0) {
+            throw new IllegalStateException("Meeting is set to a date in the future!");
+        } else if (text == null){
+            throw new NullPointerException("Notes are null");
+        } else {
+            PastMeetingImpl tmpMeeting = (PastMeetingImpl) getPastMeetingById(id);
+            tmpMeeting.setNotes(text);
+        }
     }
     /**
      * Create a new contact with the specified name and notes.
@@ -162,7 +241,7 @@ public class ContactManagerImpl implements ContactManager{
      * @param notes notes to be added about the contact.
      * @throws NullPointerException if the name or the notes are null
      */
-    public void addNewContact(String name, String notes){
+    public void addNewContact(String name, String notes) throws NullPointerException{
         contacts.add(new ContactImpl(name,notes,getLargestId(false)));
     }
     /**
@@ -172,7 +251,7 @@ public class ContactManagerImpl implements ContactManager{
      * @return a list containing the contacts that correspond to the IDs.
      * @throws IllegalArgumentException if any of the IDs does not correspond to a real contact
      */
-    public Set<Contact> getContacts(int... ids){
+    public Set<Contact> getContacts(int... ids) throws IllegalArgumentException{
        Set<Contact> contactSet = new HashSet<Contact>();
         for(int i: ids) {
             Optional<Contact> person =  contacts.stream().filter(x -> (x.getId() == i)).findFirst();
@@ -291,6 +370,11 @@ public class ContactManagerImpl implements ContactManager{
         return null;
     }
 
+    /**
+     * A helper method to turn an array of strings into an array of ints. Needed for contacts.
+     * @param input The input array of strings
+     * @return The converted array of integers
+     */
     public static int[] stringToInt(String[] input) {
         int[] numbers = new int[input.length];
         for (int i = 0; i < input.length; i++) {
@@ -298,7 +382,11 @@ public class ContactManagerImpl implements ContactManager{
         }
         return numbers;
     }
-    //Load the file and populate the contacts / future meetings / past meetings
+
+    /**
+     * Load the file and populate the contacts and meetings
+     * @param fileName Enables you to specify a filename - good for testing.
+     */
     public void loadFile(String fileName) {
         meetingData = file.readFile(fileName);
         loadContacts();
@@ -312,7 +400,9 @@ public class ContactManagerImpl implements ContactManager{
         }
     }
 
-    //Populate the contacts from the xml
+    /**
+     * Populate the contact list from the file
+     */
     public void loadContacts(){
         NodeList contactList = file.getItems("contact", meetingData);
 
@@ -340,6 +430,10 @@ public class ContactManagerImpl implements ContactManager{
 
     }
 
+    /**
+     * Populate the meeting lists from the file
+     * @param past if set to true then this populates past meetings, otherwise it populates future meetings
+     */
     public void loadMeetings(boolean past) throws ParseException {
         NodeList meetingList = file.getItems((past == true ? "pastMeeting" : "futureMeeting"), meetingData);
 

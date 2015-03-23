@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by John on 11/03/2015.
  */
-public class FutureMeetingImpl extends MeetingImpl implements FutureMeeting {
+public class FutureMeetingImpl extends MeetingImpl implements FutureMeeting, Comparable<FutureMeetingImpl> {
     public FutureMeetingImpl(int id,Calendar date, Set<Contact> contacts){
         super(id,date,contacts,true);
     }
@@ -37,6 +37,11 @@ public class FutureMeetingImpl extends MeetingImpl implements FutureMeeting {
      */
     public Set<Contact> getContacts() {
         return super.getContacts();
+    }
+
+    @Override
+    public int compareTo(FutureMeetingImpl meet) {
+        return this.getDate().compareTo(meet.getDate());
     }
 
 }

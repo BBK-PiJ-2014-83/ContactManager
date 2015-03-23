@@ -49,4 +49,8 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting{
     public String getNotes() {
         return this.Notes;
     }
+
+    public void setNotes(String notes) {
+        this.Notes = notes;
+    }
 }
