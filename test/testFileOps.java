@@ -30,5 +30,24 @@ public class testFileOps {
         Meeting testMeeting = testContactManager.getPastMeeting(1);
         assertEquals(1,testMeeting.getId());
     }
+    //load the futureMeeting from the testfile then test to see if it exists by calling it back
+    @Test
+    public void GetFutureMeetingsFromFile() {
+        Meeting testMeeting = testContactManager.getFutureMeeting(2);
+        assertEquals(2,testMeeting.getId());
+    }
 
+    //Try to get a future meeting  that is in the past
+    @Test(expected = IllegalArgumentException.class)
+    public void GetFutureMeetingsFromPast() {
+        Meeting testMeeting = testContactManager.getFutureMeeting(1);
+    }
+
+
+    //Try to get a future meeting  that doesn't exist. SHould return null.
+    @Test
+    public void GetFutureMeetingNotExist() {
+        Meeting testMeeting = testContactManager.getFutureMeeting(4);
+        assertEquals(null,testMeeting);
+    }
 }

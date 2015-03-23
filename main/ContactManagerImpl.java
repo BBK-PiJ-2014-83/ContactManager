@@ -4,6 +4,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ContactManagerImpl implements ContactManager{
@@ -11,12 +14,17 @@ public class ContactManagerImpl implements ContactManager{
     List<Meeting> meetings;
     List<PastMeeting> pastMeetings;
     XmlFile file;
+
     Document meetingData;
+    public static DateFormat df = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+    private boolean past;
+
     public ContactManagerImpl() {
         contacts = new HashSet<Contact>();
         meetings = new ArrayList<Meeting>();
         pastMeetings = new ArrayList<PastMeeting>();
         file = new XmlFile();
+
     }
 
     /**
@@ -250,17 +258,22 @@ public class ContactManagerImpl implements ContactManager{
     public void loadFile(String fileName) {
         meetingData = file.readFile(fileName);
         loadContacts();
-        loadMeetings(true);
-        loadMeetings(false);
+        try {
+            loadMeetings(true);
+            loadMeetings(false);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     //Populate the contacts from the xml
     public void loadContacts() {
         NodeList contactList = file.getItems("contact", meetingData);
-        int id = 0;
-        String notes = "";
-        String name = "";
+
         for (int i = 0; i < contactList.getLength(); i++) {
+            int id = 0;
+            String notes = "";
+            String name = "";
             NodeList contact = contactList.item(i).getChildNodes();
             for (int j = 0; j < contact.getLength(); j++) {
                 if (contact.item(j).getNodeType() == Node.ELEMENT_NODE){
@@ -278,13 +291,49 @@ public class ContactManagerImpl implements ContactManager{
                 }
             }
             contacts.add(new ContactImpl(name,notes,id));
-            // System.out.println(contactList.item(i).getChildNodes().getLength());
-
         }
 
     }
 
-    public void loadMeetings(boolean pastMeetings) {
+    public void loadMeetings(boolean past) throws ParseException {
+        NodeList meetingList = file.getItems((past == true ? "pastMeeting" : "futureMeeting"), meetingData);
+
+        for (int i = 0; i < meetingList.getLength(); i++) {
+            //Declare inside as they are use in the loop only
+            int id = 0;
+
+            String notes = "";
+            Set<Contact> meetContacts = null;
+            Calendar meetDate = new GregorianCalendar();
+
+            NodeList contact = meetingList.item(i).getChildNodes();
+            for (int j = 0; j < contact.getLength(); j++) {
+                if (contact.item(j).getNodeType() == Node.ELEMENT_NODE){
+                    switch (contact.item(j).getNodeName()) {
+                        case "id" :
+                            id = Integer.parseInt(contact.item(j).getTextContent());
+                            break;
+                        case "contacts" :
+                            //They are listed as a string of integers. Split to string array then convert to integers and search for contacts.
+                            String[] tmpContacts = contact.item(j).getTextContent().split(",");
+                            meetContacts = getContacts(ContactManagerImpl.stringToInt(tmpContacts));
+                            break;
+                        case "date" :
+                            meetDate.setTime(df.parse(contact.item(j).getTextContent()));
+                            break;
+                        case "notes" :
+                            notes = contact.item(j).getTextContent();
+                    }
+
+                }
+            }
+            if (past) {
+                pastMeetings.add(new PastMeetingImpl(id,meetDate,meetContacts,notes));
+            } else {
+                meetings.add(new FutureMeetingImpl(id,meetDate,meetContacts));
+            }
+
+        }
 
     }
 }

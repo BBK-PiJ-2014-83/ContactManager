@@ -17,6 +17,7 @@
             <id>1</id>
             <date>2014/04/02 10:00:00</date>
             <contacts>1,2</contacts>
+            <notes>blah blah</notes>
         </pastMeeting>
     </pastMeetings>
     <futureMeetings>
