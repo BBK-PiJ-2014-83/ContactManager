@@ -50,4 +50,12 @@ public class MeetingImpl implements Meeting {
     public Set<Contact> getContacts() {
         return this.Contacts;
     }
+
+    public String getContactsAsString() {
+        String returnStr = "";
+        for(Contact contact : Contacts) {
+            returnStr += contact.getId() + ",";
+        }
+        return returnStr.substring(0, returnStr.lastIndexOf(","));
+    }
 }

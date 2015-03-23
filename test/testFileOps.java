@@ -16,7 +16,7 @@ public class testFileOps {
     @Before
     public void before() {
         testContactManager = new ContactManagerImpl();
-        testContactManager.loadFile("testFile");
+        testContactManager.loadFile("testfile");
     }
     @Test
     public void addContactsFromFile() {
@@ -49,5 +49,10 @@ public class testFileOps {
     public void GetFutureMeetingNotExist() {
         Meeting testMeeting = testContactManager.getFutureMeeting(4);
         assertEquals(null,testMeeting);
+    }
+
+    @Test
+    public void testSave() {
+        testContactManager.flush();
     }
 }

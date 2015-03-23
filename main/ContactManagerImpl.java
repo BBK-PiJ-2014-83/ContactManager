@@ -1,9 +1,12 @@
 package main;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +20,7 @@ public class ContactManagerImpl implements ContactManager{
 
     Document meetingData;
     public static DateFormat df = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-    private boolean past;
+    static String filename  = "contactmanager";
 
     public ContactManagerImpl() {
         contacts = new HashSet<Contact>();
@@ -205,8 +208,53 @@ public class ContactManagerImpl implements ContactManager{
      * closed and when/if the user requests it.
      */
     public void flush(){
+        try {
+            DocumentBuilderFactory docBuilder = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dbuilder = docBuilder.newDocumentBuilder();
+            Document meetingData = dbuilder.newDocument();
+            Element rootElement = meetingData.createElement("contactManager");
+            meetingData.appendChild(rootElement);
+            Element contactXML =  meetingData.createElement("contacts");
+            //First contacts
+            for (Contact contact : contacts) {
+                Element tmpContact =  meetingData.createElement("contact");
+                file.createNode(meetingData,"id",Integer.toString(contact.getId()), tmpContact);
+                file.createNode(meetingData,"name",contact.getName(),tmpContact);
+                file.createNode(meetingData,"notes",contact.getNotes(),tmpContact);
+                contactXML.appendChild(tmpContact);
+            }
+            rootElement.appendChild(contactXML);
+            //now Create future meeting nodes
+            Element futureXML =  meetingData.createElement("futureMeetings");
+            for (Meeting meeting : meetings) {
+                //Convert to a temp meeting impl so you can use the getContactsAsString method
+                MeetingImpl tmpMeetingImpl = (MeetingImpl) meeting;
+                Element tmpMeeting =  meetingData.createElement("futureMeeting");
+                file.createNode(meetingData,"id",Integer.toString(meeting.getId()),tmpMeeting);
+                file.createNode(meetingData,"contacts",tmpMeetingImpl.getContactsAsString(), tmpMeeting);
+                file.createNode(meetingData,"date",df.format(meeting.getDate().getTime()),tmpMeeting);
+                futureXML.appendChild(tmpMeeting);
+            }
+            rootElement.appendChild(futureXML);
+            //Now past meetings
+            Element pastXML =  meetingData.createElement("pastMeetings");
+            for (PastMeeting meeting : pastMeetings) {
+                //Convert to a temp meeting impl so you can use the getContactsAsString method
+                PastMeetingImpl tmpMeetingImpl = (PastMeetingImpl) meeting;
+                Element tmpMeeting =  meetingData.createElement("pastMeeting");
+                file.createNode(meetingData,"id",Integer.toString(meeting.getId()),tmpMeeting);
+                file.createNode(meetingData,"contacts",tmpMeetingImpl.getContactsAsString(), tmpMeeting);
+                file.createNode(meetingData,"date",df.format(meeting.getDate().getTime()),tmpMeeting);
+                file.createNode(meetingData,"notes",tmpMeetingImpl.getNotes(),tmpMeeting);
+                pastXML.appendChild(tmpMeeting);
+            }
+            rootElement.appendChild(pastXML);
+            System.out.println((file.saveFile(filename,meetingData)) ? "File saved!" : "File save didn't work!");
 
-    };
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     /**
      * Loop through list and bring back the largest id
@@ -243,10 +291,6 @@ public class ContactManagerImpl implements ContactManager{
         return null;
     }
 
-    public void getContacts() {
-
-    }
-
     public static int[] stringToInt(String[] input) {
         int[] numbers = new int[input.length];
         for (int i = 0; i < input.length; i++) {
@@ -259,15 +303,17 @@ public class ContactManagerImpl implements ContactManager{
         meetingData = file.readFile(fileName);
         loadContacts();
         try {
+            //load past meetings
             loadMeetings(true);
+            //load future meetings
             loadMeetings(false);
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println("There has been a parsing error when reading in the meetings. Please make sure the dates are in the correct format.");
         }
     }
 
     //Populate the contacts from the xml
-    public void loadContacts() {
+    public void loadContacts(){
         NodeList contactList = file.getItems("contact", meetingData);
 
         for (int i = 0; i < contactList.getLength(); i++) {
@@ -287,7 +333,6 @@ public class ContactManagerImpl implements ContactManager{
                         case "id" :
                             id = Integer.parseInt(contact.item(j).getTextContent());
                     }
-
                 }
             }
             contacts.add(new ContactImpl(name,notes,id));
@@ -315,8 +360,8 @@ public class ContactManagerImpl implements ContactManager{
                             break;
                         case "contacts" :
                             //They are listed as a string of integers. Split to string array then convert to integers and search for contacts.
-                            String[] tmpContacts = contact.item(j).getTextContent().split(",");
-                            meetContacts = getContacts(ContactManagerImpl.stringToInt(tmpContacts));
+                               String[] tmpContacts = contact.item(j).getTextContent().split(",");
+                               meetContacts = getContacts(ContactManagerImpl.stringToInt(tmpContacts));
                             break;
                         case "date" :
                             meetDate.setTime(df.parse(contact.item(j).getTextContent()));
@@ -327,6 +372,7 @@ public class ContactManagerImpl implements ContactManager{
 
                 }
             }
+            //All the data is gathered - create a new future or past meeting
             if (past) {
                 pastMeetings.add(new PastMeetingImpl(id,meetDate,meetContacts,notes));
             } else {
